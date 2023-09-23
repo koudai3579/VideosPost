@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import Firebase
 
 class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
@@ -28,6 +29,7 @@ class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate
     private func configureVideo(){
 
         player = AVPlayer(url: mediaURL)
+        print(mediaURL)
         let playerView = AVPlayerLayer()
         playerView.player = player
         playerView.frame = videoContentView.bounds
@@ -39,6 +41,28 @@ class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate
     }
     
     @IBAction func postButtonTapped(_ sender: Any) {
+        //画像をURLに変換してStorageに保存
+        let thumbnailImage = thumbnailImageView.image!
+        guard let uploadImage = thumbnailImage.jpegData(compressionQuality: 0.5) else {return}
+        let ImageileName = NSUUID().uuidString
+        let storageRef = Storage.storage().reference().child("thumbnail_image").child(ImageileName)
+        
+        storageRef.putData(uploadImage, metadata: nil) { (metadata, err) in
+            if let err = err {
+                print("Firebaseへの画像の保存に失敗しました。\(err)")
+                return
+            }
+            storageRef.downloadURL { (url, err) in
+                if let err = err{
+                    print("Firebaseからのダウンロードに失敗しました。\(err)")
+                    return
+                }
+                guard let thumbnailImageUrl = url?.absoluteString else {return}
+                
+                //動画をURLに変換してStorageに保存
+                
+            }
+        }
     }
     
     @objc func thumbnailImageViewTapped() {
