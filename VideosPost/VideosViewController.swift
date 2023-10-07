@@ -6,15 +6,17 @@
 //
 
 import UIKit
+import Firebase
+import Nuke
 private let cellId = "cellId"
 
-struct VideoModel{
-    let caption:String
-    let username:String
-    let audioTrackName:String
-    let videoFileName:String
-    let videoFileFormat:String
-}
+//struct VideoModel{
+//    let caption:String
+//    let username:String
+//    let audioTrackName:String
+//    let videoFileName:String
+//    let videoFileFormat:String
+//}
 
 
 class VideosViewController: UIViewController, UITableViewDataSource,UITableViewDelegate,UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -29,6 +31,14 @@ class VideosViewController: UIViewController, UITableViewDataSource,UITableViewD
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = videosTableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath)
+        let thmnailImageView = cell.viewWithTag(1) as! UIImageView
+        if let url = URL(string: self.videos[indexPath.row].thumbnailImageUrl){
+            Nuke.loadImage(with: url, into: thmnailImageView)
+        }
+        let userImageView = cell.viewWithTag(3) as! UIImageView
+        userImageView.layer.cornerRadius = 25
+        let titleTextView = cell.viewWithTag(4) as! UITextView
+        titleTextView.text = self.self.videos[indexPath.row].tittle
         return cell
     }
     
@@ -41,39 +51,59 @@ class VideosViewController: UIViewController, UITableViewDataSource,UITableViewD
         self.navigationController?.pushViewController(vc, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }
-
-    var videos = [VideoModel]()
+    
+    var videos = [Video]()
     @IBOutlet weak var videosTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        for _ in 0..<10{
-            let model = VideoModel(caption: "caption", username: "username", audioTrackName: "audioTrackName", videoFileName: "video1", videoFileFormat: "mp4")
-            videos.append(model)
-        }
         videosTableView.dataSource = self
         videosTableView.delegate = self
-
+        fetchVideoDatas()
+        
+    }
+    
+    private func fetchVideoDatas(){
+        
+        
+        self.videos.removeAll()
+        self.videos = [Video]()
+        
+//        guard let uid = Auth.auth().currentUser?.uid else {return}
+        Firestore.firestore().collection("videos").getDocuments { (snapshots, err) in
+            if let err = err {
+                print("ユーザー情報の取得に失敗しました。\(err)")
+                self.videosTableView.reloadData()
+                return
+            }
+            
+            snapshots?.documents.forEach({ (snapshot) in
+                
+                let dic = snapshot.data()
+                let video = Video.init(dic: dic)
+                self.videos.append(video)
+                self.videosTableView.reloadData()
+            })
+        }
     }
     
     
     @IBAction func postVideo(_ sender: Any) {
-                let imagePickerController = UIImagePickerController()
-                imagePickerController.delegate = self
-                //タイプはアルバム。
-                imagePickerController.sourceType = .savedPhotosAlbum
-                //動画だけを抽出。
-                imagePickerController.mediaTypes = ["public.movie"]
-                //編集不可にする。
-//                imagePickerController.allowsEditing = false
-                self.present(imagePickerController, animated: true, completion: nil)
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = .savedPhotosAlbum
+        //動画だけを抽出。
+        imagePickerController.mediaTypes = ["public.movie"]
+        //編集不可にする。
+        //imagePickerController.allowsEditing = false
+        self.present(imagePickerController, animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true, completion: nil)
-        }
-
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         let mediaURL = info[.mediaURL] as? URL
@@ -87,6 +117,6 @@ class VideosViewController: UIViewController, UITableViewDataSource,UITableViewD
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
-
-
+    
+    
 }

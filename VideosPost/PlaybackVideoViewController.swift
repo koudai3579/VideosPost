@@ -37,14 +37,11 @@ class PlaybackVideoViewController: UIViewController, UITableViewDelegate, UITabl
         }
     }
     
-    
-    
-    @IBOutlet weak var FullScreenVideoButton: UIButton!
     @IBOutlet weak var videoContentView: UIView!
     @IBOutlet weak var subContentTableView: UITableView!
     
     var player:AVPlayer?
-    var video:VideoModel!
+    var video:Video!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,32 +52,37 @@ class PlaybackVideoViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     private func configureVideo(){
-        guard let video = video else {
-            print("video is none")
-            return}
-        guard let path = Bundle.main.path(forResource: video.videoFileName, ofType: video.videoFileFormat) else{
-            print("failed to get path")
+        //        guard let path = Bundle.main.path(forResource: video.videoFileName, ofType: video.videoFileFormat) else{
+        //            print("failed to get path")
+        //            return
+        //        }
+        //        guard let url = URL(string: video.videoUrl) else {
+        //            print("url is none")
+        //            return}
+        //        player = AVPlayer(url: url)
+        //        let playerView = AVPlayerLayer()
+        //        playerView.player = player
+        //        playerView.frame = videoContentView.bounds
+        //        playerView.videoGravity = .resizeAspectFill
+        //        videoContentView.layer.addSublayer(playerView)
+        //        player?.volume = 0
+        //        player?.play()
+        // Firebaseから取得した動画のURL
+        guard let url = URL(string: video.videoUrl) else {
+            print("この動画URLは無効です。")
             return
         }
-        player = AVPlayer(url: URL(fileURLWithPath: path))
-        let playerView = AVPlayerLayer()
-        playerView.player = player
-        playerView.frame = videoContentView.bounds
-        playerView.videoGravity = .resizeAspectFill
-        videoContentView.layer.addSublayer(playerView)
-        player?.volume = 0
-        player?.play()
-        videoContentView.bringSubviewToFront(FullScreenVideoButton)
-
+        print("有効なURL:",url)
+        // AVPlayerを作成
+        player = AVPlayer(url: url)
+        let playerLayer = AVPlayerLayer(player: player)
+        playerLayer.frame = videoContentView.bounds
+        playerLayer.videoGravity = .resizeAspectFill
+        videoContentView.layer.addSublayer(playerLayer)
+        player!.volume = 1.0
+        player!.play()
         
     }
     
-    
-    @IBAction func showFullScreenVideo(_ sender: Any) {
-        let vc = storyboard?.instantiateViewController(withIdentifier: "FullScreenVideoViewController") as! FullScreenVideoViewController
-        navigationController?.pushViewController(vc, animated: true)
-        // 横向きに切り替える
-        
-    }
     
 }

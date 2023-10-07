@@ -9,7 +9,7 @@ import UIKit
 import AVFoundation
 import Firebase
 
-class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate, UITextFieldDelegate,UINavigationControllerDelegate {
     
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var postButton: UIButton!
@@ -21,15 +21,15 @@ class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         configureVideo()
+        postButton.isEnabled = false
+        tittleTextField.delegate = self
         thumbnailImageView.isUserInteractionEnabled = true
         thumbnailImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(thumbnailImageViewTapped)))
 
     }
     
     private func configureVideo(){
-
         player = AVPlayer(url: mediaURL)
-        print(mediaURL)
         let playerView = AVPlayerLayer()
         playerView.player = player
         playerView.frame = videoContentView.bounds
@@ -41,26 +41,138 @@ class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate
     }
     
     @IBAction func postButtonTapped(_ sender: Any) {
-        //画像をURLに変換してStorageに保存
+        
+        uploadVideoToDB(url: self.mediaURL)
+        
+//        self.postButton.isEnabled = false
+//        //①画像をURLに変換してStorageに保存
+//        let thumbnailImage = thumbnailImageView.image!
+//        guard let uploadImage = thumbnailImage.jpegData(compressionQuality: 0.5) else {return}
+//        let ImageFileName = NSUUID().uuidString
+//        let storageRef = Storage.storage().reference().child("thumbnail_image").child(ImageFileName)
+//        
+//        storageRef.putData(uploadImage, metadata: nil) { (metadata, err) in
+//            if let err = err {
+//                print("Firebaseへの画像の保存に失敗しました。\(err)")
+//                return
+//            }
+//            storageRef.downloadURL { (url, err) in
+//                if let err = err{
+//                    print("Firebaseから画像のダウンロードに失敗しました。\(err)")
+//                    return
+//                }
+//                guard let uploadedThumbnailImageUrl = url?.absoluteString else {return}
+//                
+//                //②動画をURLに変換してStorageに保存
+//                
+//                let filename = UUID().uuidString
+//                let ref = Storage.storage().reference().child("videos").child("\(filename).mp4")
+//                
+//                let videoData = try Data(contentsOf: self.mediaURL)
+//                ref.putData(videoData, metadata: nil) { (metadata, err) in
+//                        if let err = err {
+//                            print("Firebaseへの画像の保存に失敗しました。\(err)")
+//                            return
+//                        }
+//                    ref.downloadURL { (url, err) in
+//                        if let err = err{
+//                            print("Firebaseからの動画のダウンロードに失敗しました。\(err)")
+//                            return
+//                        }
+//                        guard let uploadedVideoUrl = url?.absoluteString else {return}
+//                        //③FireStoreにデータをテキストベースで保存
+//                        let videoUUID = NSUUID().uuidString
+//                        let docData = [
+//                            "uid": "",
+//                            "tittle": self.tittleTextField.text ?? "タイトルなし",
+//                            "videoUrl": uploadedVideoUrl,
+//                            "thumbnailImageUrl": uploadedThumbnailImageUrl,
+//                            "date":Timestamp(),
+//                        ] as [String : Any]
+//                        
+//                        Firestore.firestore().collection("videos").document(videoUUID).setData(docData) { (err) in
+//                            if let err = err {
+//                                print("err:",err)
+//                            }
+//                            let alert = UIAlertController(title: "投稿が完了しました。", message: nil, preferredStyle: .alert)
+//                            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
+//                                self.navigationController?.popViewController(animated: true)
+//                            }))
+//                            self.present(alert, animated: true, completion: nil)
+//                        }
+//                    }
+//
+//                }
+//                    
+//            }
+//        }
+    }
+    
+    func uploadVideoToDB(url: URL){
+        
+        //①画像をURLに変換してStorageに保存
         let thumbnailImage = thumbnailImageView.image!
         guard let uploadImage = thumbnailImage.jpegData(compressionQuality: 0.5) else {return}
-        let ImageileName = NSUUID().uuidString
-        let storageRef = Storage.storage().reference().child("thumbnail_image").child(ImageileName)
+        let ImageFileName = NSUUID().uuidString
+        let storageRef = Storage.storage().reference().child("thumbnail_image").child(ImageFileName)
         
         storageRef.putData(uploadImage, metadata: nil) { (metadata, err) in
             if let err = err {
                 print("Firebaseへの画像の保存に失敗しました。\(err)")
                 return
             }
-            storageRef.downloadURL { (url, err) in
+            storageRef.downloadURL { (imageURL, err) in
                 if let err = err{
-                    print("Firebaseからのダウンロードに失敗しました。\(err)")
+                    print("Firebaseから画像のダウンロードに失敗しました。\(err)")
                     return
                 }
-                guard let thumbnailImageUrl = url?.absoluteString else {return}
+                guard let uploadedThumbnailImageUrl = imageURL?.absoluteString else {return}
                 
-                //動画をURLに変換してStorageに保存
-                
+                //②動画をURLに変換してStorageに保存
+                let filename = UUID().uuidString
+                let videoRef = Storage.storage().reference().child("videos").child("\(filename).mp4")
+                do {
+                    let videoData = try Data(contentsOf: url)
+                    videoRef.putData(videoData) { (metadata, error) in
+                        if let error = error {
+                            print("Firebase_Storageへの動画の保存に失敗しました。エラー: \(error)")
+                            return
+                        }
+                        
+                        videoRef.downloadURL { (videoURL, error) in
+                            if let error = error {
+                                print("Firebaseからの動画のダウンロードに失敗しました。エラー: \(error)")
+                                return
+                            }
+                            
+                            guard let uploadedVideoUrl = videoURL?.absoluteString else {return}
+                            
+                            //③FireStoreにデータをテキストベースで保存
+                            let videoUUID = NSUUID().uuidString
+                            let docData = [
+                                "uid": "",
+                                "tittle": self.tittleTextField.text ?? "タイトルなし",
+                                "videoUrl": uploadedVideoUrl,
+                                "thumbnailImageUrl": uploadedThumbnailImageUrl,
+                                "date":Timestamp(),
+                            ] as [String : Any]
+                            
+                            Firestore.firestore().collection("videos").document(videoUUID).setData(docData) { (err) in
+                                if let err = err {
+                                    print("err:",err)
+                                }
+                                
+                                let alert = UIAlertController(title: "投稿が完了しました。", message: nil, preferredStyle: .alert)
+                                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
+                                    self.navigationController?.popViewController(animated: true)
+                                }))
+                                self.present(alert, animated: true, completion: nil)
+                            }
+                        }
+                    }
+                } catch {
+                    print("動画の読み込みに失敗しました。エラー: \(error)")
+                }
             }
         }
     }
@@ -82,4 +194,22 @@ class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate
         dismiss(animated:true, completion: nil)
     }
     
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        
+        if tittleTextField.text?.isEmpty == true{
+            postButton.isEnabled = false
+        }else{
+            postButton.isEnabled = true
+        }
+    }
+    
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
 }
