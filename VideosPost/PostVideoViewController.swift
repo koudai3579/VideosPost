@@ -17,7 +17,7 @@ class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate
     @IBOutlet weak var videoContentView: UIView!
     var mediaURL:URL!
     var player:AVPlayer?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureVideo()
@@ -25,7 +25,6 @@ class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate
         tittleTextField.delegate = self
         thumbnailImageView.isUserInteractionEnabled = true
         thumbnailImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(thumbnailImageViewTapped)))
-
     }
     
     private func configureVideo(){
@@ -41,71 +40,9 @@ class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate
     }
     
     @IBAction func postButtonTapped(_ sender: Any) {
-        
+        self.postButton.isEnabled = false
         uploadVideoToDB(url: self.mediaURL)
         
-//        self.postButton.isEnabled = false
-//        //①画像をURLに変換してStorageに保存
-//        let thumbnailImage = thumbnailImageView.image!
-//        guard let uploadImage = thumbnailImage.jpegData(compressionQuality: 0.5) else {return}
-//        let ImageFileName = NSUUID().uuidString
-//        let storageRef = Storage.storage().reference().child("thumbnail_image").child(ImageFileName)
-//        
-//        storageRef.putData(uploadImage, metadata: nil) { (metadata, err) in
-//            if let err = err {
-//                print("Firebaseへの画像の保存に失敗しました。\(err)")
-//                return
-//            }
-//            storageRef.downloadURL { (url, err) in
-//                if let err = err{
-//                    print("Firebaseから画像のダウンロードに失敗しました。\(err)")
-//                    return
-//                }
-//                guard let uploadedThumbnailImageUrl = url?.absoluteString else {return}
-//                
-//                //②動画をURLに変換してStorageに保存
-//                
-//                let filename = UUID().uuidString
-//                let ref = Storage.storage().reference().child("videos").child("\(filename).mp4")
-//                
-//                let videoData = try Data(contentsOf: self.mediaURL)
-//                ref.putData(videoData, metadata: nil) { (metadata, err) in
-//                        if let err = err {
-//                            print("Firebaseへの画像の保存に失敗しました。\(err)")
-//                            return
-//                        }
-//                    ref.downloadURL { (url, err) in
-//                        if let err = err{
-//                            print("Firebaseからの動画のダウンロードに失敗しました。\(err)")
-//                            return
-//                        }
-//                        guard let uploadedVideoUrl = url?.absoluteString else {return}
-//                        //③FireStoreにデータをテキストベースで保存
-//                        let videoUUID = NSUUID().uuidString
-//                        let docData = [
-//                            "uid": "",
-//                            "tittle": self.tittleTextField.text ?? "タイトルなし",
-//                            "videoUrl": uploadedVideoUrl,
-//                            "thumbnailImageUrl": uploadedThumbnailImageUrl,
-//                            "date":Timestamp(),
-//                        ] as [String : Any]
-//                        
-//                        Firestore.firestore().collection("videos").document(videoUUID).setData(docData) { (err) in
-//                            if let err = err {
-//                                print("err:",err)
-//                            }
-//                            let alert = UIAlertController(title: "投稿が完了しました。", message: nil, preferredStyle: .alert)
-//                            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
-//                                self.navigationController?.popViewController(animated: true)
-//                            }))
-//                            self.present(alert, animated: true, completion: nil)
-//                        }
-//                    }
-//
-//                }
-//                    
-//            }
-//        }
     }
     
     func uploadVideoToDB(url: URL){
@@ -150,11 +87,12 @@ class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate
                             //③FireStoreにデータをテキストベースで保存
                             let videoUUID = NSUUID().uuidString
                             let docData = [
-                                "uid": "",
+                                "docID": videoUUID,
                                 "tittle": self.tittleTextField.text ?? "タイトルなし",
                                 "videoUrl": uploadedVideoUrl,
                                 "thumbnailImageUrl": uploadedThumbnailImageUrl,
                                 "date":Timestamp(),
+                                "playedCount":0,
                             ] as [String : Any]
                             
                             Firestore.firestore().collection("videos").document(videoUUID).setData(docData) { (err) in

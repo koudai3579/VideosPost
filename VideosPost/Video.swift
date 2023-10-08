@@ -3,17 +3,19 @@ import Firebase
 
 class Video {
     
-    let uid: String
+    let docID: String
     var tittle: String
     var videoUrl:String
     var thumbnailImageUrl:String
-    var lastMessageAt:Timestamp
+    var date:Timestamp
+    var playedCount:Int
     
     init(dic: [String: Any]) {
-        self.uid = dic["uid"] as? String ?? ""
+        self.docID = dic["docID"] as? String ?? ""
         self.tittle = dic["tittle"] as? String ?? ""
         self.videoUrl = dic["videoUrl"] as? String ?? ""
         self.thumbnailImageUrl = dic["thumbnailImageUrl"] as? String ?? ""
-        self.lastMessageAt = dic["lastMessageAt"] as? Timestamp ?? Timestamp()
+        self.date = dic["lastMessageAt"] as? Timestamp ?? Timestamp()
+        self.playedCount = dic["playedCount"] as? Int ?? 0
     }
 }

@@ -9,15 +9,7 @@ import UIKit
 import Firebase
 import Nuke
 private let cellId = "cellId"
-
-//struct VideoModel{
-//    let caption:String
-//    let username:String
-//    let audioTrackName:String
-//    let videoFileName:String
-//    let videoFileFormat:String
-//}
-
+import AVFoundation
 
 class VideosViewController: UIViewController, UITableViewDataSource,UITableViewDelegate,UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -38,7 +30,15 @@ class VideosViewController: UIViewController, UITableViewDataSource,UITableViewD
         let userImageView = cell.viewWithTag(3) as! UIImageView
         userImageView.layer.cornerRadius = 25
         let titleTextView = cell.viewWithTag(4) as! UITextView
-        titleTextView.text = self.self.videos[indexPath.row].tittle
+        titleTextView.text = self.videos[indexPath.row].tittle
+        
+        let dateLabel = cell.viewWithTag(5) as! UILabel
+        dateLabel.text = dateFormatterForDateLabel(date:self.videos[indexPath.row].date.dateValue())
+        
+        //動画の長さを取得↓
+//        let asset = AVAsset(url: URL(string: self.videos[indexPath.row].videoUrl)!)
+        
+        
         return cell
     }
     
@@ -57,11 +57,14 @@ class VideosViewController: UIViewController, UITableViewDataSource,UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.title = "VideosPost"
         videosTableView.dataSource = self
         videosTableView.delegate = self
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
         fetchVideoDatas()
-        
     }
     
     private func fetchVideoDatas(){
@@ -117,6 +120,13 @@ class VideosViewController: UIViewController, UITableViewDataSource,UITableViewD
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
-    
-    
+}
+
+
+public func dateFormatterForDateLabel(date: Date) -> String {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .short
+    formatter.timeStyle = .none
+    formatter.locale = Locale(identifier: "ja_JP")
+    return formatter.string(from: date)
 }
