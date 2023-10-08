@@ -61,8 +61,8 @@
                                                     <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="caZ-lc-2NL">
-                                                    <rect key="frame" x="331" y="188" width="32" height="18"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="caZ-lc-2NL">
+                                                    <rect key="frame" x="321.66666666666669" y="188" width="41.333333333333314" height="18"/>
                                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -99,6 +99,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="8NW-tE-jty">
                         <barButtonItem key="rightBarButtonItem" title="動画を投稿" id="yiq-DQ-c9n">
+                            <color key="tintColor" red="0.41483455450000001" green="0.92939150329999998" blue="0.84828818930000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             <connections>
                                 <action selector="postVideo:" destination="xXo-Kn-Lwh" id="yLk-EI-aZd"/>
                             </connections>
@@ -124,13 +125,19 @@
                                 <rect key="frame" x="0.0" y="103" width="393" height="200"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ipH-Pz-5G5">
-                                        <rect key="frame" x="333" y="140" width="50" height="50"/>
+                                        <rect key="frame" x="288.66666666666669" y="150" width="94.333333333333314" height="40"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="PQn-Bu-vvs"/>
+                                            <constraint firstAttribute="height" constant="40" id="PQn-Bu-vvs"/>
                                         </constraints>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" image="arrow.up.left.and.arrow.down.right" catalog="system"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="全画面表示">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="15"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="showFullscreenVideoButtonTapped:" destination="hkj-RM-1F8" eventType="touchUpInside" id="Jpf-E4-hJP"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -181,9 +188,12 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" tag="5" contentMode="scaleToFill" misplaced="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s04-AP-wu7">
-                                                    <rect key="frame" x="260.66666666666669" y="115" width="122.33333333333331" height="36"/>
+                                                <button opaque="NO" tag="5" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s04-AP-wu7">
+                                                    <rect key="frame" x="260.66666666666669" y="116" width="122.33333333333331" height="35"/>
                                                     <color key="backgroundColor" systemColor="systemGray2Color"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="35" id="CTc-hd-nPL"/>
+                                                    </constraints>
                                                     <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="plain" title="チャンネル登録">
@@ -247,8 +257,8 @@
                                                     <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xGe-uM-nvg">
-                                                    <rect key="frame" x="331" y="188" width="32" height="18"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xGe-uM-nvg">
+                                                    <rect key="frame" x="321.66666666666669" y="188" width="41.333333333333314" height="18"/>
                                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -290,6 +300,7 @@
                         <barButtonItem key="backBarButtonItem" title="back" id="oX7-fY-YTI"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="showFullscreenVideoButton" destination="ipH-Pz-5G5" id="6Bq-Ty-d3s"/>
                         <outlet property="subContentTableView" destination="T3g-ik-6gF" id="CBW-fe-Bk4"/>
                         <outlet property="videoContentView" destination="g9u-yJ-o87" id="UNI-KS-2ib"/>
                     </connections>
@@ -449,7 +460,6 @@
     </scenes>
     <resources>
         <image name="Image" width="533.33331298828125" height="400"/>
-        <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="128" height="115"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

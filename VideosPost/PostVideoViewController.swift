@@ -1,27 +1,22 @@
-//
-//  PostVideoViewController.swift
-//  VideosPost
-//
-//  Created by Koudai Okamura on 2023/09/23.
-//
-
 import UIKit
 import AVFoundation
 import Firebase
 
 class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate, UITextFieldDelegate,UINavigationControllerDelegate {
     
+    var mediaURL:URL!
+    var player:AVPlayer?
+    
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var postButton: UIButton!
     @IBOutlet weak var tittleTextField: UITextField!
     @IBOutlet weak var videoContentView: UIView!
-    var mediaURL:URL!
-    var player:AVPlayer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureVideo()
         postButton.isEnabled = false
+        postButton.layer.cornerRadius = 10
         tittleTextField.delegate = self
         thumbnailImageView.isUserInteractionEnabled = true
         thumbnailImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(thumbnailImageViewTapped)))
@@ -42,11 +37,9 @@ class PostVideoViewController: UIViewController, UIImagePickerControllerDelegate
     @IBAction func postButtonTapped(_ sender: Any) {
         self.postButton.isEnabled = false
         uploadVideoToDB(url: self.mediaURL)
-        
     }
     
     func uploadVideoToDB(url: URL){
-        
         //①画像をURLに変換してStorageに保存
         let thumbnailImage = thumbnailImageView.image!
         guard let uploadImage = thumbnailImage.jpegData(compressionQuality: 0.5) else {return}
